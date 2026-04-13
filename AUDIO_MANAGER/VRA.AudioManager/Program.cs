@@ -1,84 +1,120 @@
-using NAudio.Wave.Asio;
-using System.Runtime.InteropServices;
-using Microsoft.Win32;
+using System.Text.Json;
+using NAudio.CoreAudioApi;
+using VRA.AudioManager.Audio;
+using VRA.AudioManager.Config;
+using VRA.AudioManager.Display;
+using VRA.AudioManager.Gpio;
 
 namespace VRA.AudioManager;
 
 public static class Program
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     public static void Main(string[] args)
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
-        Console.WriteLine("╔══════════════════════════════════════════════════╗");
-        Console.WriteLine("║        VRA Audio Manager — ASIO Discovery       ║");
-        Console.WriteLine("╚══════════════════════════════════════════════════╝");
-        Console.WriteLine();
 
-        var driverNames = AsioDriver.GetAsioDriverNames();
-
-        if (driverNames.Length == 0)
+        var configPath = Path.Combine(AppContext.BaseDirectory, "vra-audio.json");
+        if (!File.Exists(configPath))
         {
-            Console.WriteLine("  Aucun driver ASIO détecté sur cette machine.");
-            Console.WriteLine("  Vérifiez que vos interfaces audio sont installées.");
+            Console.WriteLine($"  ✘ Fichier de configuration introuvable : {configPath}");
             return;
         }
 
-        Console.WriteLine($"  {driverNames.Length} driver(s) ASIO détecté(s) :");
-        Console.WriteLine(new string('─', 50));
-
-        for (int i = 0; i < driverNames.Length; i++)
+        var config = JsonSerializer.Deserialize<AudioConfig>(File.ReadAllText(configPath), JsonOptions);
+        if (config is null || config.Channels.Count == 0)
         {
-            var name = driverNames[i];
-            Console.WriteLine();
-            Console.WriteLine($"  [{i + 1}] {name}");
+            Console.WriteLine("  ✘ Configuration invalide ou aucun canal défini.");
+            return;
+        }
 
+        using var enumerator = new MMDeviceEnumerator();
+
+        // Tri naturel → indices stables et groupés par carte
+        var rawDevices = enumerator
+            .EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active)
+            .OrderBy(d => d.FriendlyName, NaturalStringComparer.Instance)
+            .ToList();
+
+        var allDevices = rawDevices
+            .Select((d, i) => new DeviceInfo(i + 1, d.FriendlyName, d.ID))
+            .ToList();
+
+        // Résolution DeviceName (config) → DeviceInfo par correspondance partielle
+        var resolved = new Dictionary<string, DeviceInfo>();
+        var errors   = new List<string>();
+
+        foreach (var ch in config.Channels)
+        {
+            if (resolved.ContainsKey(ch.DeviceName)) continue;
+
+            var match = allDevices.FirstOrDefault(d =>
+                d.Name.Contains(ch.DeviceName, StringComparison.OrdinalIgnoreCase));
+
+            if (match is not null)
+                resolved[ch.DeviceName] = match;
+            else
+                errors.Add($"  ✘ Périphérique introuvable pour \"{ch.DeviceName}\"");
+        }
+
+        if (errors.Count > 0)
+        {
+            errors.ForEach(Console.WriteLine);
+            Console.WriteLine("  Périphériques disponibles :");
+            allDevices.ForEach(d => Console.WriteLine($"    [{d.Index,2}] {d.Name}"));
+            return;
+        }
+
+        // Ouverture des seuls devices nécessaires (clé = Windows Device ID)
+        var devicesToOpen = resolved.Values
+            .DistinctBy(d => d.WindowsId)
+            .ToDictionary(d => d.WindowsId, d => rawDevices[d.Index - 1]);
+
+        using var monitor = new LevelMonitor(devicesToOpen);
+
+        DhdDriver? dhd = null;
+        if (config.Dhd is not null)
+        {
+            dhd = new DhdDriver(config.Dhd.Ip, config.Dhd.Port);
+            dhd.ConnectionChanged += connected =>
+                Console.Title = connected ? "VRA Audio — DHD connecté" : "VRA Audio — DHD déconnecté";
+
+            foreach (var ch in config.Channels)
+                if (ch.Gpi?.Mode == "dhd")
+                    dhd.WatchAddress(ch.Gpi.OnOff);
+
+            dhd.Start();
+        }
+
+        var renderer = new VuMeterRenderer(config.Channels, monitor, allDevices, resolved, dhd);
+
+        renderer.PrintHeader();
+        monitor.Start();
+
+        using var cts = new CancellationTokenSource();
+        Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
+
+        while (!cts.Token.IsCancellationRequested)
+        {
             try
             {
-                PrintDriverDetails(name);
+                renderer.Render();
             }
-            catch (Exception ex)
+            catch (System.IO.IOException)
             {
-                Console.WriteLine($"      ⚠ Impossible d'ouvrir ce driver : {ex.Message}");
+                // Pipe console cassé (ex: terminal fermé) — on quitte proprement
+                break;
             }
+            Thread.Sleep(30);
         }
 
-        Console.WriteLine();
-        Console.WriteLine(new string('─', 50));
-        Console.WriteLine("  Scan terminé. Appuyez sur une touche pour quitter.");
-        Console.ReadKey(true);
-    }
-
-    private static void PrintDriverDetails(string driverName)
-    {
-        // NAudio's AsioOut opens the driver, queries capabilities, then we dispose
-        using var asio = new NAudio.Wave.AsioOut(driverName);
-
-        int inputChannels = asio.DriverInputChannelCount;
-        int outputChannels = asio.DriverOutputChannelCount;
-
-        Console.WriteLine($"      Entrées : {inputChannels} canal/canaux");
-        Console.WriteLine($"      Sorties : {outputChannels} canal/canaux");
-
-        if (inputChannels > 0)
-        {
-            Console.WriteLine("      ┌─ Canaux d'entrée :");
-            for (int ch = 0; ch < inputChannels; ch++)
-            {
-                var channelName = asio.AsioInputChannelName(ch);
-                Console.WriteLine($"      │  IN {ch,2} : {channelName}");
-            }
-            Console.WriteLine("      └");
-        }
-
-        if (outputChannels > 0)
-        {
-            Console.WriteLine("      ┌─ Canaux de sortie :");
-            for (int ch = 0; ch < outputChannels; ch++)
-            {
-                var channelName = asio.AsioOutputChannelName(ch);
-                Console.WriteLine($"      │  OUT {ch,2} : {channelName}");
-            }
-            Console.WriteLine("      └");
-        }
+        monitor.Stop();
+        dhd?.Dispose();
+        Console.CursorVisible = true;
+        Console.WriteLine("\n\n  Arrêt.");
     }
 }

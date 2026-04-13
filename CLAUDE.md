@@ -29,10 +29,34 @@ Ce dépôt héberge le développement du composant **Audio Manager** (`AUDIO_MAN
 
 ---
 
+## Build & Run
+
+```bash
+# Restaurer les dépendances
+dotnet restore VisualRadio.sln
+
+# Build (Debug)
+dotnet build VisualRadio.sln
+
+# Build (Release)
+dotnet build VisualRadio.sln -c Release
+
+# Exécuter l'Audio Manager
+dotnet run --project AUDIO_MANAGER/VRA.AudioManager
+
+# Exécuter un seul test (quand des tests existent)
+dotnet test VisualRadio.sln --filter "FullyQualifiedName~NomDuTest"
+```
+
+> **Windows uniquement** : le target framework est `net8.0-windows` (dépendances ASIO/WASAPI). Le build échouera sur Linux/macOS.
+
+---
+
 ## Composants et stack
 
 ### Audio Manager (ce dépôt)
-- **Runtime** : .NET 6+ / C#
+- **Runtime** : .NET 8 / C# (target `net8.0-windows`, nullable enabled)
+- **Dépendance principale** : NAudio 2.2.1 (ASIO, WASAPI, audio I/O)
 - **Sources audio** : ASIO, WASAPI, WebSocket ZenonMedia, GPIO DHD
 - **Rôle** : analyse niveaux audio en temps réel → triggers HTTP vers le Core (port 3002)
 - **Gate audio** : détection d'activité micro avec suppression de réverbe studio (éviter la repisse)

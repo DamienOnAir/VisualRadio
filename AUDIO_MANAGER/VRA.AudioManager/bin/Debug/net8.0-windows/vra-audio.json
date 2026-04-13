@@ -1,0 +1,19 @@
+{
+  "dhd": {
+    "ip": "10.89.2.218",
+    "port": 2008
+  },
+  "channels": [
+    { "name": "Mic 1", "deviceName": "MADI (25-32)", "channelIndex": [1] , "gpi" : {"mode" : "dhd", "on_off": 266} },
+    { "name": "Mic 2", "deviceName": "MADI (25-32)", "channelIndex": [2] , "gpi" : {"mode" : "dhd", "on_off": 270} },
+    { "name": "Mic 3", "deviceName": "MADI (25-32)", "channelIndex": [3] , "gpi" : {"mode" : "dhd", "on_off": 274} },
+    { "name": "Mic 4", "deviceName": "MADI (25-32)", "channelIndex": [4] , "gpi" : {"mode" : "dhd", "on_off": 278} },
+    { "name": "Mic 5", "deviceName": "MADI (25-32)", "channelIndex": [5] , "gpi" : {"mode" : "dhd", "on_off": 282} },
+    { "name": "Mic 6", "deviceName": "MADI (25-32)", "channelIndex": [6] , "gpi" : {"mode" : "dhd", "on_off": 286} },
+    { "name": "Mic 7", "deviceName": "MADI (25-32)", "channelIndex": [7] , "gpi" : {"mode" : "dhd", "on_off": 290} },
+    { "name": "EXT 1", "deviceName": "MADI (57-64)", "channelIndex": [5] },
+    { "name": "EXT 2", "deviceName": "MADI (57-64)", "channelIndex": [6] },
+    { "name": "EXT 3", "deviceName": "MADI (57-64)", "channelIndex": [7] },
+    { "name": "EXT 5", "deviceName": "MADI (57-64)", "channelIndex": [8] }
+  ]
+}

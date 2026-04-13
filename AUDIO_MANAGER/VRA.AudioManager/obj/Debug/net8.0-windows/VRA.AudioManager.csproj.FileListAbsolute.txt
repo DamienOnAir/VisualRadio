@@ -3,13 +3,8 @@ C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioMan
 C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\bin\Debug\net8.0-windows\VRA.AudioManager.runtimeconfig.json
 C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\bin\Debug\net8.0-windows\VRA.AudioManager.dll
 C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\bin\Debug\net8.0-windows\VRA.AudioManager.pdb
-C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\bin\Debug\net8.0-windows\NAudio.dll
-C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\bin\Debug\net8.0-windows\NAudio.Asio.dll
 C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\bin\Debug\net8.0-windows\NAudio.Core.dll
-C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\bin\Debug\net8.0-windows\NAudio.Midi.dll
 C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\bin\Debug\net8.0-windows\NAudio.Wasapi.dll
-C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\bin\Debug\net8.0-windows\NAudio.WinForms.dll
-C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\bin\Debug\net8.0-windows\NAudio.WinMM.dll
 C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\obj\Debug\net8.0-windows\VRA.AudioManager.csproj.AssemblyReference.cache
 C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\obj\Debug\net8.0-windows\VRA.AudioManager.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\obj\Debug\net8.0-windows\VRA.AudioManager.AssemblyInfoInputs.cache
@@ -21,3 +16,5 @@ C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioMan
 C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\obj\Debug\net8.0-windows\VRA.AudioManager.pdb
 C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\obj\Debug\net8.0-windows\VRA.AudioManager.genruntimeconfig.cache
 C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\obj\Debug\net8.0-windows\ref\VRA.AudioManager.dll
+C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\obj\Debug\net8.0-windows\VRA.AudioManager.sourcelink.json
+C:\Users\Damien.GLOAGUEN\OneDrive\dev\lmn\VisualRadio\AUDIO_MANAGER\VRA.AudioManager\bin\Debug\net8.0-windows\vra-audio.json
